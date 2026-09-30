@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-robotics"
+version = "0.1.0"
+description = "Simulation and algorithmic foundations for the AEGIS autonomous robotics platform."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+aegis = "aegis.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
