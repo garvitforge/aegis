@@ -12,7 +12,7 @@ This repository starts with simulation and algorithmic foundations before hardwa
 
 ## Current status
 
-**v0.2 — State & exploration foundation**
+**v0.3 — Closed-loop sensing & exploration**
 
 Implemented:
 - Grid-world environment
@@ -23,10 +23,12 @@ Implemented:
 - Nearest reachable frontier selection
 - Deterministic unit tests
 - Automated CI testing
+- Deterministic range-sensor simulation
+- Partial-observability occupancy map
+- Closed-loop sense → map → plan → move → sense exploration
+- Planning restricted to discovered free space
 
 Planned:
-- Incremental sensor simulation
-- Occupancy-grid updates
 - Dynamic obstacles
 - Frontier scoring / information gain
 - Return-to-base logic
