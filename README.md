@@ -12,32 +12,32 @@ This repository starts with simulation and algorithmic foundations before hardwa
 
 ## Current status
 
-**v0.1 — Simulation foundation**
+**v0.2 — State & exploration foundation**
 
 Implemented:
 - Grid-world environment
 - Occupancy/obstacle representation
 - 4-connected A* path planning
-- Deterministic path validation
-- Unit tests for the core planner
+- Robot state and battery model
+- Unknown-space frontier detection
+- Nearest reachable frontier selection
+- Deterministic unit tests
+- Automated CI testing
 
 Planned:
-- Robot state model
-- Sensor simulation
-- Exploration and frontier selection
+- Incremental sensor simulation
+- Occupancy-grid updates
 - Dynamic obstacles
+- Frontier scoring / information gain
+- Return-to-base logic
 - Real-time telemetry
 - Computer vision
 - Hardware abstraction layer
 - Physical robot integration
 
-## Why simulation first?
-
-Autonomous systems are easier to debug when perception, planning and control can be tested independently. AEGIS therefore treats simulation as an engineering tool, not just a visual demo.
-
 ## Architecture
 
-```text
+```
 Sensors / Simulator
         ↓
    Perception
