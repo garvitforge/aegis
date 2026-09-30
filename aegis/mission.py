@@ -21,6 +21,8 @@ class Mission:
     metrics: MissionMetrics
     battery_reserve: float = 20.0
     base_position: tuple[int, int] | None = None
+    battery_reserve: float = 20.0
+    base_position: tuple[int, int] | None = None
 
     def sense(self) -> None:
         before = len(self.known.known_free) + len(self.known.known_obstacles)
