@@ -12,7 +12,7 @@ This repository starts with simulation and algorithmic foundations before hardwa
 
 ## Current status
 
-**v0.3 — Closed-loop sensing & exploration**
+**v0.5 — Decision-aware autonomous exploration**
 
 Implemented:
 - Grid-world environment
@@ -27,12 +27,15 @@ Implemented:
 - Partial-observability occupancy map
 - Closed-loop sense → map → plan → move → sense exploration
 - Planning restricted to discovered free space
+- Information-gain frontier scoring with deterministic tie-breaking
+- Battery-aware return-to-base mission mode
+- Mission decision telemetry and safety-stop tracking
+- Deterministic multi-scenario benchmark suite
 
 Planned:
-- Dynamic obstacles
-- Frontier scoring / information gain
-- Return-to-base logic
-- Real-time telemetry
+- Dynamic environment simulation
+- Richer frontier scoring and risk models
+- Real-time telemetry dashboard
 - Computer vision
 - Hardware abstraction layer
 - Physical robot integration
