@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 from time import perf_counter
 
-from .autonomy import _frontier_vantage, _shortest_known_path
+from .autonomy import _shortest_known_path
+from .decision import best_frontier
 from .mapping import OccupancyMap
 from .metrics import MissionMetrics
 from .sensors import FourWayRangeSensor
@@ -18,6 +19,8 @@ class Mission:
     known: OccupancyMap
     sensor: FourWayRangeSensor
     metrics: MissionMetrics
+    battery_reserve: float = 20.0
+    base_position: tuple[int, int] | None = None
 
     def sense(self) -> None:
         before = len(self.known.known_free) + len(self.known.known_obstacles)
@@ -32,17 +35,42 @@ class Mission:
             raise ValueError("max_steps must be positive.")
 
         self.sense()
+        if self.base_position is None:
+            self.base_position = self.robot.position
 
+        returning = False
         for _ in range(max_steps):
-            target = _frontier_vantage(self.known, self.robot.position)
-            if target is None:
-                self.metrics.record("mission_complete", reason="no_reachable_frontier")
-                break
+            if self.robot.battery <= self.battery_reserve and self.robot.position != self.base_position:
+                returning = True
+                self.metrics.record("mode_change", mode="RETURN_TO_BASE")
 
-            frontier, vantage = target
-            started = perf_counter()
-            path = _shortest_known_path(self.known, self.robot.position, vantage)
-            elapsed = perf_counter() - started
+            if returning:
+                path = _shortest_known_path(self.known, self.robot.position, self.base_position)
+                if path is None:
+                    self.metrics.safety_stops += 1
+                    self.metrics.record("return_failed", base=self.base_position)
+                    break
+                if len(path) == 1:
+                    self.metrics.record("mission_complete", reason="returned_to_base")
+                    break
+                target = None
+                vantage = self.base_position
+            else:
+                candidate = best_frontier(self.known, self.robot.position)
+                if candidate is None:
+                    self.metrics.record("mission_complete", reason="no_reachable_frontier")
+                    break
+                target = candidate.frontier
+                vantage = candidate.vantage
+                self.metrics.record("decision", frontier=target, vantage=vantage, score=candidate.score, information_gain=candidate.information_gain)
+                path = None
+            if path is None:
+                started = perf_counter()
+                path = _shortest_known_path(self.known, self.robot.position, vantage)
+                elapsed = perf_counter() - started
+            else:
+                started = perf_counter()
+                elapsed = perf_counter() - started
             self.metrics.record_plan(elapsed * 1000.0)
 
             if path is None:
@@ -59,7 +87,10 @@ class Mission:
 
             self.robot = self.robot.moved_to(next_position)
             self.metrics.steps += 1
-            self.metrics.record("move", position=next_position, frontier=frontier)
+            self.metrics.record("move", position=next_position, frontier=target)
             self.sense()
+            if returning and self.robot.position == self.base_position:
+                self.metrics.record("mission_complete", reason="returned_to_base")
+                break
 
         return self.metrics
