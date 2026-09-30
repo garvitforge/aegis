@@ -4,14 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aegis-robotics"
-version = "0.1.0"
+version = "0.6.0"
 description = "Simulation and algorithmic foundations for the AEGIS autonomous robotics platform."
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
+viz = ["pillow>=10.0"]
 dev = [
     "pytest>=8.0",
+    "pillow>=10.0",
 ]
 
 [project.scripts]

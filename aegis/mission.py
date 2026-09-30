@@ -2,9 +2,10 @@
 
 from dataclasses import dataclass
 from time import perf_counter
+from typing import Callable
 
 from .autonomy import _shortest_known_path
-from .decision import best_frontier
+from .decision import FrontierCandidate, best_frontier
 from .mapping import OccupancyMap
 from .metrics import MissionMetrics
 from .sensors import FourWayRangeSensor
@@ -21,8 +22,10 @@ class Mission:
     metrics: MissionMetrics
     battery_reserve: float = 20.0
     base_position: tuple[int, int] | None = None
-    battery_reserve: float = 20.0
-    base_position: tuple[int, int] | None = None
+    # Strategy used to pick the next frontier. Swappable so strategies can be benchmarked.
+    frontier_selector: Callable[
+        [OccupancyMap, tuple[int, int]], FrontierCandidate | None
+    ] = best_frontier
 
     def sense(self) -> None:
         before = len(self.known.known_free) + len(self.known.known_obstacles)
@@ -58,7 +61,7 @@ class Mission:
                 target = None
                 vantage = self.base_position
             else:
-                candidate = best_frontier(self.known, self.robot.position)
+                candidate = self.frontier_selector(self.known, self.robot.position)
                 if candidate is None:
                     self.metrics.record("mission_complete", reason="no_reachable_frontier")
                     break
