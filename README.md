@@ -2,73 +2,58 @@
 
 **Autonomous Emergency Ground Intelligence System**
 
-AEGIS is an experimental robotics platform for autonomous exploration and emergency-response scenarios.
-
-The long-term goal is to combine:
-
-**Perception → Sensor Fusion → Mapping → Planning → Decision Making → Control → Telemetry**
-
-This repository starts with simulation and algorithmic foundations before hardware deployment.
+AEGIS is a simulation-first robotics project exploring how a robot can navigate a partially known grid, map its surroundings, choose exploration targets, and return to base safely. It is an algorithmic prototype—not yet a physical rescue robot.
 
 ## Current status
 
-**v0.5 — Decision-aware autonomous exploration**
+**v0.6.0 — Faster frontier decisions and battery-aware return**
 
 Implemented:
-- Grid-world environment
-- Occupancy/obstacle representation
-- 4-connected A* path planning
-- Robot state and battery model
-- Unknown-space frontier detection
-- Nearest reachable frontier selection
-- Deterministic unit tests
-- Automated CI testing
-- Deterministic range-sensor simulation
-- Partial-observability occupancy map
+- Grid-world environment and 4-connected A* path planning
+- Robot state, battery model, and deterministic four-direction range sensing
+- Partial-observability occupancy mapping
+- Frontier detection and deterministic information-gain scoring
+- BFS distance maps to evaluate many reachable frontier approaches from one traversal
+- Reference A*-based frontier candidate implementation for differential testing
 - Closed-loop sense → map → plan → move → sense exploration
-- Planning restricted to discovered free space
-- Information-gain frontier scoring with deterministic tie-breaking
-- Battery-aware return-to-base mission mode
-- Mission decision telemetry and safety-stop tracking
-- Deterministic multi-scenario benchmark suite
+- Return-to-base decisions that account for estimated path length and battery cost
+- Mission telemetry, planning-time measurements, and safety-stop events
+- Automated tests and GitHub Actions CI
 
-Planned:
-- Dynamic environment simulation
-- Richer frontier scoring and risk models
-- Real-time telemetry dashboard
-- Computer vision
-- Hardware abstraction layer
-- Physical robot integration
+## Quick start
 
-## Architecture
+Python 3.10 or newer is required.
 
+```bash
+python -m pip install -e ".[dev]"
+pytest -q
+aegis
+python -m aegis.mission_demo
 ```
-Sensors / Simulator
-        ↓
-   Perception
-        ↓
-   Sensor Fusion
-        ↓
- Environment Model
-        ↓
- Decision / Planner
-        ↓
- Motion Controller
-        ↓
- Robot / Simulator
-        ↓
- Telemetry & Logging
-```
+
+On Windows, use `py -3.12 -m pip install -e ".[dev]"` if the `python` command is not available but the Python launcher is installed.
+
+## Important limitations
+
+- This is a deterministic grid simulation, not a real robot.
+- The sensor and motion model are idealized; sensor noise, wheel slip, dynamic obstacles, and physical hardware interfaces are not implemented.
+- Return planning estimates battery use from grid moves and a configured per-move cost. It is not a certified safety guarantee.
+- The frontier information-gain score is a simple local heuristic, not an entropy-based model.
+
+## Roadmap
+
+- Hybrid frontier strategy and broader reproducible benchmark suite
+- Dynamic obstacles and sensor-noise experiments
+- Better energy modelling and return-to-base risk handling
+- Telemetry dashboard
+- Hardware abstraction, computer vision, and physical robot integration
 
 ## Engineering principles
 
-- Reproducible experiments
-- Small testable components
-- Measurable performance
-- Hardware/software separation
-- Fail-safe behavior
-- Documented assumptions
+- Reproducible, deterministic tests
+- Small, testable components
+- Measurable planning performance
+- Planning restricted to discovered free space
+- Explicit assumptions and honest scope
 
-## Project status
-
-This is an actively developed student engineering project. Features are marked as implemented only after they exist in the repository and are tested.
+AEGIS is actively developed. Features are described as implemented only when code and tests support them.
